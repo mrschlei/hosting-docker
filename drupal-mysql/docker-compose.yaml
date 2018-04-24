@@ -1,0 +1,37 @@
+# Drupal with MySQL
+#
+# docker-compose up
+# docker-compose stop
+#
+# 4/24/2018: not currently working.  Cannot login using provided
+# credentials.
+
+version: '3.2'
+
+services:
+
+  drupal:
+    image: drupal:8-apache
+    ports:
+      - 8080:80
+    volumes:
+      - /var/www/html/modules
+      - /var/www/html/profiles
+      - /var/www/html/themes
+      # this takes advantage of the feature in Docker that a new anonymous
+      # volume (which is what we're creating here) will be initialized with the
+      # existing content of the image at the same location
+      - /var/www/html/sites
+    restart: always
+
+  mysql:
+    image: mysql:8
+    environment:
+      MYSQL_DATABASE: drupal
+      MYSQL_ROOT_PASSWORD: root-pwd
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: drupal
+    volumes:
+    # First volume is local: second volume is the container's postgres db location.
+    - /temp/drupal/mysql:/var/lib/mysql
+    restart: always
