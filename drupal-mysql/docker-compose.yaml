@@ -3,15 +3,15 @@
 # docker-compose up
 # docker-compose stop
 #
-# 4/24/2018: not currently working.  Cannot login using provided
-# credentials.
+# during db setup, mysql host will need to be equivalent to the
+# name of the db service, mysql in this case.
 
 version: '3.2'
 
 services:
 
   drupal:
-    image: drupal:8-apache
+    image: drupal:8
     ports:
       - 8080:80
     volumes:
@@ -22,10 +22,14 @@ services:
       # volume (which is what we're creating here) will be initialized with the
       # existing content of the image at the same location
       - /var/www/html/sites
+    links:
+      - mysql
     restart: always
 
   mysql:
-    image: mysql:8
+    image: mysql:5
+    ports:
+      - 3306:3306
     environment:
       MYSQL_DATABASE: drupal
       MYSQL_ROOT_PASSWORD: root-pwd
@@ -33,5 +37,5 @@ services:
       MYSQL_PASSWORD: drupal
     volumes:
     # First volume is local: second volume is the container's postgres db location.
-    - /temp/drupal/mysql:/var/lib/mysql
+      - /temp/drupal/mysql:/var/lib/mysql
     restart: always
